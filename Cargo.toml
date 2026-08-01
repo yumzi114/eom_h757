@@ -1,0 +1,26 @@
+[workspace]
+resolver = "3"
+
+members = [
+    "cm7",
+    "board",
+    "drivers",
+    "common", "cm4",
+]
+
+default-members = ["cm7"]
+
+
+
+
+[workspace.dependencies]
+rtt-target = "0.6"
+panic-halt = "1.0"
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
+
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

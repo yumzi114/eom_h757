@@ -1,0 +1,9 @@
+{
+    "rust-analyzer.check.command": "check",
+
+    "rust-analyzer.cargo.target": "thumbv7em-none-eabihf",
+    "rust-analyzer.check.allTargets": false,
+    "rust-analyzer.runnables.extraEnv": {
+        "CARGO_BUILD_TARGET": "thumbv7em-none-eabihf"
+    }
+}

@@ -1,0 +1,30 @@
+[package]
+name = "cm4"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+board = { path = "../board" }
+drivers = { path = "../drivers" }
+common = { path = "../common" }
+
+cortex-m-rt = "0.7"
+
+rtic = { version = "2.3", features = ["thumbv7-backend"] }
+
+rtt-target.workspace = true
+panic-halt.workspace = true
+cortex-m.workspace = true
+stm32h7 = { version = "0.16.0", features = ["stm32h757cm4"] }
+
+embassy-stm32 = { version = "0.6", features = [
+    "stm32h757xi-cm4",
+    "unstable-pac",
+    # "memory-x",
+]}
+
+[[bin]]
+name = "cm4"
+path = "src/main.rs"
+test = false
+bench = false

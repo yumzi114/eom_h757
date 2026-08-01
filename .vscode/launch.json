@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "STM32H757 J-Link",
+
+            "type": "cortex-debug",
+            "request": "launch",
+
+            "cwd": "${workspaceFolder}",
+
+            // "executable": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/cm7",
+            "executable": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/cm4",
+            "servertype": "jlink",
+            "serverpath": "/opt/SEGGER/JLink/JLinkGDBServerCLExe",
+
+            "device": "STM32H757XI_M4",
+            // "device": "STM32H757XI_M7",
+            "interface": "swd",
+            "serialNumber": "53000782",
+
+            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+
+            "preLaunchTask": "cargo-build-app",
+
+            "showDevDebugOutput": "raw",
+
+            "rttConfig": {
+                "address": "0x30000404",
+                // "address": "0x24000008",
+                "decoders": [
+                    {
+                        "label": "console",
+                        "port": 0,
+                        "type": "console"
+                    }
+                ]
+            },
+            "runToEntryPoint": "Reset"
+        }
+    ]
+}
