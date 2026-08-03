@@ -1,16 +1,16 @@
 use std::path::PathBuf;
 
 fn main() {
-    slint_build::compile("ui/app.slint").unwrap();
+    println!("cargo:rerun-if-changed=memory.x");
 
-    let manifest_dir = PathBuf::from(
-        std::env::var("CARGO_MANIFEST_DIR").unwrap()
-    );
+    let manifest_dir =
+        PathBuf::from(
+            std::env::var("CARGO_MANIFEST_DIR")
+                .expect("CARGO_MANIFEST_DIR is not set"),
+        );
 
     println!(
         "cargo:rustc-link-search={}",
         manifest_dir.display()
     );
-
-    println!("cargo:rerun-if-changed=memory.x");
 }

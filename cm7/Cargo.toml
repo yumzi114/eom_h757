@@ -2,50 +2,42 @@
 name = "cm7"
 version = "0.1.0"
 edition = "2024"
+build = "build.rs"
 
 [dependencies]
 board = { path = "../board" }
 drivers = { path = "../drivers" }
 common = { path = "../common" }
+rtt-target.workspace = true
+panic-halt.workspace = true
+cortex-m.workspace = true
 
 cortex-m-rt = "0.7"
 
 rtic = { version = "2.3", features = ["thumbv7-backend"] }
 
-# RTT TEST ONLY
-# panic-halt = "1.0"
-# rtt-target = "0.6"
-
 embassy-stm32 = { version = "0.6", features = [
     "stm32h757xi-cm7",
     "unstable-pac",
-    # "memory-x",
 ] }
 
 stm32h7 = { version = "0.16.0", features = ["stm32h757cm7"] }
 
-# cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
-rtt-target.workspace = true
-panic-halt.workspace = true
-cortex-m.workspace = true
-slint = { version = "1.13", default-features = false, features = [
+slint = { version = "1.17.1", default-features = false, features = [
     "compat-1-2",
     "libm",
     "renderer-software",
     "unsafe-single-threaded",
 ] }
+
 embedded-alloc = "0.6"
-[profile.dev]
-panic = "abort"
 
-[profile.release]
-panic = "abort"
-
+[build-dependencies]
+slint-build = "1.17.1"
+cc = "1"
 
 [[bin]]
 name = "cm7"
 path = "src/main.rs"
 test = false
 bench = false
-[build-dependencies]
-slint-build = "1.13"
