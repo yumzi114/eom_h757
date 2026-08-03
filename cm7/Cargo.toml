@@ -5,8 +5,8 @@ edition = "2024"
 build = "build.rs"
 
 [dependencies]
-board = { path = "../board" }
-drivers = { path = "../drivers" }
+board = { path = "../board" ,features = ["cm7"]}
+drivers = {path = "../drivers",features = ["cm7"]}
 common = { path = "../common" }
 rtt-target.workspace = true
 panic-halt.workspace = true

@@ -16,3 +16,7 @@
 ```bash
 chmod +x ./run-dual.sh
 ./run-dual.sh release
+
+https://www.st.com/en/microcontrollers-microprocessors/stm32h745-755/documentation.html
+
+CM7 400MHz / HCLK 200MHz / APB 100MHz

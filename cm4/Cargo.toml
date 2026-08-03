@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 board = { path = "../board" }
-drivers = { path = "../drivers" }
+drivers = {path = "../drivers",features = ["cm4"]}
 common = { path = "../common" }
 
 cortex-m-rt = "0.7"
