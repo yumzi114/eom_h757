@@ -28,7 +28,13 @@ stm32h7 = { version = "0.16.0", features = ["stm32h757cm7"] }
 rtt-target.workspace = true
 panic-halt.workspace = true
 cortex-m.workspace = true
-
+slint = { version = "1.13", default-features = false, features = [
+    "compat-1-2",
+    "libm",
+    "renderer-software",
+    "unsafe-single-threaded",
+] }
+embedded-alloc = "0.6"
 [profile.dev]
 panic = "abort"
 
@@ -41,3 +47,5 @@ name = "cm7"
 path = "src/main.rs"
 test = false
 bench = false
+[build-dependencies]
+slint-build = "1.13"

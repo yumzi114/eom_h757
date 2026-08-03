@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 
 fn main() {
+    slint_build::compile("ui/app.slint").unwrap();
+
     let manifest_dir = PathBuf::from(
         std::env::var("CARGO_MANIFEST_DIR").unwrap()
     );

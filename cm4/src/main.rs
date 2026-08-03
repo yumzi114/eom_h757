@@ -42,7 +42,7 @@ mod app {
                 write_volatile(CM4_COUNT_ADDR, counter);
             }
 
-            for _ in 0..100_000 {
+            for _ in 0..100_0 {
                 cortex_m::asm::nop();
             }
         }
