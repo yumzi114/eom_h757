@@ -97,7 +97,7 @@ mod app {
             write_volatile(FDCAN_RX_DATA1_ADDR, 0);
         }
 
-        match fdcan::internal_loopback_test() {
+        match fdcan::init_normal_500k() {
             Ok(status) => unsafe {
                 write_volatile(FDCAN_ENDN_ADDR, status.endn);
                 write_volatile(FDCAN_CCCR_ADDR, status.cccr);

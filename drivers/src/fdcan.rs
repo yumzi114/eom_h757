@@ -4,9 +4,9 @@ use core::ptr::{
     read_volatile,
     write_volatile,
 };
-
 use stm32h7::stm32h757cm4::{
     FDCAN1,
+    GPIOA,
     RCC,
 };
 
@@ -81,11 +81,13 @@ unsafe fn ram_read(byte_offset: usize) -> u32 {
     read_volatile(ptr)
 }
 
-pub fn internal_loopback_test()
+pub fn init_normal_500k()
     -> Result<FdcanLoopbackResult, &'static str>
-{
+{   
     let rcc = unsafe { &*RCC::ptr() };
+    let gpioa = unsafe { &*GPIOA::ptr() };
     let fdcan = unsafe { &*FDCAN1::ptr() };
+    
 
     /*
      * FDCAN kernel clock = PLL1Q.
@@ -113,7 +115,98 @@ pub fn internal_loopback_test()
     });
 
     let _ = rcc.apb1henr().read().bits();
+    /*
+    * GPIOA clock enable.
+    */
+    rcc.ahb4enr().modify(|r, w| unsafe {
+        w.bits(r.bits() | (1 << 0))
+    });
 
+    let _ = rcc.ahb4enr().read().bits();
+
+    /*
+    * PA11 = FDCAN1_RX
+    * PA12 = FDCAN1_TX
+    * Alternate function mode
+    */
+    gpioa.moder().modify(|r, w| unsafe {
+        let mut value = r.bits();
+
+        value &= !(
+            (0b11 << 22) |
+            (0b11 << 24)
+        );
+
+        value |=
+            (0b10 << 22) |
+            (0b10 << 24);
+
+        w.bits(value)
+    });
+
+    /*
+    * Push-pull
+    */
+    gpioa.otyper().modify(|r, w| unsafe {
+        let mut value = r.bits();
+
+        value &= !(
+            (1 << 11) |
+            (1 << 12)
+        );
+
+        w.bits(value)
+    });
+
+    /*
+    * Very high speed
+    */
+    gpioa.ospeedr().modify(|r, w| unsafe {
+        let mut value = r.bits();
+
+        value &= !(
+            (0b11 << 22) |
+            (0b11 << 24)
+        );
+
+        value |=
+            (0b11 << 22) |
+            (0b11 << 24);
+
+        w.bits(value)
+    });
+
+    /*
+    * No pull-up / pull-down
+    */
+    gpioa.pupdr().modify(|r, w| unsafe {
+        let mut value = r.bits();
+
+        value &= !(
+            (0b11 << 22) |
+            (0b11 << 24)
+        );
+
+        w.bits(value)
+    });
+
+    /*
+    * PA11 / PA12 = AF9
+    */
+    gpioa.afrh().modify(|r, w| unsafe {
+        let mut value = r.bits();
+
+        value &= !(
+            (0xF << 12) |
+            (0xF << 16)
+        );
+
+        value |=
+            (9 << 12) |
+            (9 << 16);
+
+        w.bits(value)
+    });
     /*
      * Peripheral reset.
      */
@@ -211,14 +304,20 @@ pub fn internal_loopback_test()
      * CCCR.TEST = 1
      * TEST.LBCK = 1
      */
+    // fdcan.cccr().modify(|r, w| unsafe {
+    //     w.bits(r.bits() | (1 << 7))
+    // });
+
+    // fdcan.test().modify(|r, w| unsafe {
+    //     w.bits(r.bits() | (1 << 4))
+    // });
     fdcan.cccr().modify(|r, w| unsafe {
-        w.bits(r.bits() | (1 << 7))
+        w.bits(r.bits() & !(1 << 7)) // CCCR.TEST = 0
     });
 
     fdcan.test().modify(|r, w| unsafe {
-        w.bits(r.bits() | (1 << 4))
+        w.bits(r.bits() & !(1 << 4)) // TEST.LBCK = 0
     });
-
     /*
      * 모든 non-matching standard frame을
      * RX FIFO0으로 받는다.
@@ -371,69 +470,6 @@ pub fn internal_loopback_test()
      *
      * RXF0S.F0FL bits 6:0
      */
-    timeout = TIMEOUT;
-
-    loop {
-        let rxf0s = fdcan.rxf0s().read().bits();
-        let fill_level = rxf0s & 0x7F;
-
-        if fill_level != 0 {
-            break;
-        }
-
-        timeout -= 1;
-
-        if timeout == 0 {
-            return Err("FDCAN RX FIFO0 timeout");
-        }
-    }
-
-    /*
-     * RX FIFO0 get index.
-     *
-     * RXF0S.F0GI bits 13:8
-     */
-    let rxf0s = fdcan.rxf0s().read().bits();
-    let get_index = (rxf0s >> 8) & 0x3F;
-
-    /*
-     * 현재 FIFO 크기는 1개이므로 index는 0이지만
-     * 계산식은 일반 형태로 둔다.
-     *
-     * Classic CAN 8-byte element = 16 bytes.
-     */
-    let rx_element_offset =
-        RX_FIFO0_OFFSET + (get_index as usize * 16);
-
-    let rx_r0 =
-        unsafe { ram_read(rx_element_offset + 0x00) };
-
-    let rx_r1 =
-        unsafe { ram_read(rx_element_offset + 0x04) };
-
-    let rx_data0 =
-        unsafe { ram_read(rx_element_offset + 0x08) };
-
-    let rx_data1 =
-        unsafe { ram_read(rx_element_offset + 0x0C) };
-
-    /*
-     * Standard ID = R0 bits 28:18
-     * DLC         = R1 bits 19:16
-     */
-    let rx_id =
-        (rx_r0 >> 18) & 0x7FF;
-
-    let rx_dlc =
-        (rx_r1 >> 16) & 0xF;
-
-    /*
-     * FIFO element acknowledge.
-     */
-    fdcan.rxf0a().write(|w| unsafe {
-        w.bits(get_index)
-    });
-
     let result = FdcanLoopbackResult {
         endn: fdcan.endn().read().bits(),
         cccr: fdcan.cccr().read().bits(),
@@ -443,32 +479,15 @@ pub fn internal_loopback_test()
         ecr: fdcan.ecr().read().bits(),
 
         txbto: fdcan.txbto().read().bits(),
-        rxf0s,
+        rxf0s: fdcan.rxf0s().read().bits(),
 
-        rx_id,
-        rx_dlc,
-        rx_data0,
-        rx_data1,
+        rx_id: 0,
+        rx_dlc: 0,
+        rx_data0: 0,
+        rx_data1: 0,
 
         d2ccip1r: rcc.d2ccip1r().read().bits(),
         apb1henr: rcc.apb1henr().read().bits(),
     };
-
-    if result.rx_id != TEST_CAN_ID as u32 {
-        return Err("FDCAN RX ID mismatch");
-    }
-
-    if result.rx_dlc != 8 {
-        return Err("FDCAN RX DLC mismatch");
-    }
-
-    if result.rx_data0 != TEST_DATA0 {
-        return Err("FDCAN RX DATA0 mismatch");
-    }
-
-    if result.rx_data1 != TEST_DATA1 {
-        return Err("FDCAN RX DATA1 mismatch");
-    }
-
     Ok(result)
 }
