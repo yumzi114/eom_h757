@@ -10,13 +10,13 @@
 
             "cwd": "${workspaceFolder}",
 
-            // "executable": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/cm7",
-            "executable": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/cm4",
+            "executable": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/cm7",
+            // "executable": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/cm4",
             "servertype": "jlink",
             "serverpath": "/opt/SEGGER/JLink/JLinkGDBServerCLExe",
 
-            "device": "STM32H757XI_M4",
-            // "device": "STM32H757XI_M7",
+            // "device": "STM32H757XI_M4",
+            "device": "STM32H757XI_M7",
             "interface": "swd",
             "serialNumber": "53000782",
 
@@ -27,8 +27,8 @@
             "showDevDebugOutput": "raw",
 
             "rttConfig": {
-                "address": "0x30000404",
-                // "address": "0x24000008",
+                // "address": "0x30000404",
+                "address": "0x24000008",
                 "decoders": [
                     {
                         "label": "console",

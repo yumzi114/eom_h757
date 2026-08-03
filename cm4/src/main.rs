@@ -7,8 +7,12 @@ use panic_halt as _;
     device = stm32h7::stm32h757cm4,
 )]
 mod app {
+    use core::ptr::write_volatile;
 
-    use rtt_target::{rtt_init_print, rprintln};
+    const CM4_MAGIC_ADDR: *mut u32 = 0x3800_0004 as *mut u32;
+    const CM4_COUNT_ADDR: *mut u32 = 0x3800_000C as *mut u32;
+
+    const CM4_MAGIC: u32 = 0xC04C_04C4;
 
     #[shared]
     struct Shared {}
@@ -18,23 +22,27 @@ mod app {
 
     #[init]
     fn init(_cx: init::Context) -> (Shared, Local) {
+        unsafe {
+            write_volatile(CM4_MAGIC_ADDR, CM4_MAGIC);
+            write_volatile(CM4_COUNT_ADDR, 0);
+        }
 
-        rtt_init_print!();
-
-        rprintln!("CM4 BOOT OK");
-
-        (
-            Shared {},
-            Local {},
-        )
+        (Shared {}, Local {})
     }
 
     #[idle]
     fn idle(_cx: idle::Context) -> ! {
-        loop {
-            rprintln!("CM4 RUN");
+        let mut counter = 0u32;
 
-            for _ in 0..10_000_000 {
+        loop {
+            counter = counter.wrapping_add(1);
+
+            unsafe {
+                write_volatile(CM4_MAGIC_ADDR, CM4_MAGIC);
+                write_volatile(CM4_COUNT_ADDR, counter);
+            }
+
+            for _ in 0..100_000 {
                 cortex_m::asm::nop();
             }
         }

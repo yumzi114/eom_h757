@@ -8,7 +8,7 @@ members = [
     "common", "cm4",
 ]
 
-default-members = ["cm7"]
+default-members = ["cm7", "cm4"]
 
 
 

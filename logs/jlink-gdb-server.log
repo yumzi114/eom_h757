@@ -1,0 +1,40 @@
+SEGGER J-Link GDB Server V9.14a Command Line Version
+
+JLinkARM.dll V9.14a (DLL compiled Jan 28 2026 17:20:07)
+
+Command line: -device STM32H757XI_M7 -if SWD -speed 4000 -endian little -USB 53000782 -port 2331 -swoport 2332 -telnetport 2333 -RTTTelnetPort 19021 -nohalt -noir -nogui -strict
+-----GDB Server start settings-----
+GDBInit file:                  none
+GDB Server Listening port:     2331
+SWO raw output listening port: 2332
+Terminal I/O port:             2333
+Accept remote connection:      yes
+Generate logfile:              off
+Verify download:               off
+Init regs on start:            off
+Silent mode:                   off
+Single run mode:               off
+Target connection timeout:     0 ms
+------J-Link related settings------
+J-Link Host interface:         USB
+J-Link script:                 none
+J-Link settings file:          none
+------Target related settings------
+Target device:                 STM32H757XI_M7
+Target device parameters:      none
+Target interface:              SWD
+Target interface speed:        4000kHz
+Target endian:                 little
+
+Connecting to J-Link...
+J-Link is connected.
+Firmware: J-Link V13 compiled Dec 18 2025 15:14:00
+Hardware: V13.00
+S/N: 53000782
+Feature(s): GDB
+Checking target voltage...
+Target voltage: 3.31 V
+Listening on TCP/IP port 2331
+Connecting to target...
+Connected to target
+Waiting for GDB connection...

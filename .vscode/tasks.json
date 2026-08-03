@@ -8,8 +8,8 @@
             "args": [
                 "build",
                 "-p",
-                // "cm7"
-                "cm4"
+                "cm7"
+                // "cm4"
             ],
             "group": {
                 "kind": "build",

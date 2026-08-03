@@ -1,0 +1,16 @@
+device STM32H757XI_M7
+si SWD
+speed 4000
+connect
+
+sleep 500
+h
+
+regs
+mem8 0x24000404, 64
+mem32 0xE000ED28, 1
+mem32 0xE000ED2C, 1
+mem32 0xE000ED30, 1
+mem32 0xE000ED34, 1
+
+exit
